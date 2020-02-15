@@ -48,7 +48,6 @@ void DrawQueueWindow(Graphics *pGraphics) {
 	int width = windowRect.right - windowRect.left;
 	int height = windowRect.bottom - windowRect.top;
 
-	pGraphics->SetSmoothingMode(SmoothingModeAntiAlias8x8);
 	Rect windowRect2(0, 0, width, height-2);
 	Rect headerRect(0, 0, width, 40);
 	pGraphics->SetClip(headerRect);
@@ -91,6 +90,7 @@ void RecreateDisplay() {
 		if (hOldBitmap)
 			::DeleteObject(hOldBitmap);
 		Graphics g(g_hQueueDC);
+		g.SetSmoothingMode(SmoothingModeAntiAlias8x8);
 		DrawQueueWindow(&g);
 		DrawHeader(&g);
 		DrawList(&g);
