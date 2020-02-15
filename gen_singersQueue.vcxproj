@@ -199,7 +199,7 @@
     <ResourceCompile Include="gen_singersQueue.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\gen_cdgpro\gen_cdgpro\winampIcon.ico" />
+    <Image Include="winampIcon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

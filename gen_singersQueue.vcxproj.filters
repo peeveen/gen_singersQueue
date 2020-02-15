@@ -48,7 +48,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\gen_cdgpro\gen_cdgpro\winampIcon.ico">
+    <Image Include="winampIcon.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

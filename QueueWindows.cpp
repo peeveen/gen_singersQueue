@@ -11,7 +11,7 @@ using namespace Gdiplus;
 
 // Window class names.
 const WCHAR* g_pszQueueWindowClassName = L"SingersQueue";
-const WCHAR* g_pszWindowCaption = L"SingersQueue";
+const WCHAR* g_pszWindowCaption = L"Singers Queue";
 
 // Application icon.
 HICON g_hIcon = NULL;
@@ -120,7 +120,7 @@ LRESULT CALLBACK QueueWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-ATOM RegisterWindowClass(const WCHAR* pszClassName, WNDPROC wndProc) {
+ATOM RegisterQueueWindowClass() {
 	if (!g_hIcon)
 		g_hIcon = ::LoadIcon(g_hInstance, MAKEINTRESOURCE(IDI_APPICON));
 	if (g_hIcon) {
@@ -128,17 +128,13 @@ ATOM RegisterWindowClass(const WCHAR* pszClassName, WNDPROC wndProc) {
 		::ZeroMemory(&wndClass, sizeof(WNDCLASSEX));
 		wndClass.cbSize = sizeof(WNDCLASSEX);
 		wndClass.style = CS_NOCLOSE | CS_PARENTDC | CS_HREDRAW | CS_VREDRAW;
-		wndClass.lpfnWndProc = (WNDPROC)wndProc;
+		wndClass.lpfnWndProc = (WNDPROC)QueueWindowProc;
 		wndClass.hInstance = g_hInstance;
 		wndClass.hIcon = wndClass.hIconSm = g_hIcon;
-		wndClass.lpszClassName = pszClassName;
+		wndClass.lpszClassName = g_pszQueueWindowClassName;
 		return ::RegisterClassEx(&wndClass);
 	}
 	return 0;
-}
-
-ATOM RegisterQueueWindowClass() {
-	return RegisterWindowClass(g_pszQueueWindowClassName, (WNDPROC)QueueWindowProc);
 }
 
 bool CreateQueueWindow() {
@@ -203,6 +199,4 @@ void DestroyWindows() {
 	UnregisterWindowClasses();
 	::ReleaseDC(NULL, g_hScreenDC);
 	DeleteDCAndBitmap(g_hQueueDC, g_hQueueBitmap);
-	if (g_hIcon)
-		::DeleteObject(g_hIcon);
 }

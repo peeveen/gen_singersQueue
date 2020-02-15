@@ -54,11 +54,12 @@ int init() {
 	GdiplusStartupInput g_gdiPlusStartupInput;
 	::GdiplusStartup(&g_gdiPlusToken, &g_gdiPlusStartupInput, NULL);
 
-	CreateWindows();
-
 	g_hInstance = plugin.hDllInstance;
 	g_hWinampWindow = plugin.hwndParent;
 	g_pOriginalWndProc = (WNDPROC)::SetWindowLong(plugin.hwndParent, GWL_WNDPROC, (LONG)SingersQueueWndProc);
+
+	CreateWindows();
+
 	return 0;
 }
 
