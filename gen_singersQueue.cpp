@@ -2,19 +2,11 @@
 #include "pch.h"
 #include <objidl.h>
 #include <gdiplus.h>
+#include "QueueGraphics.h"
 #include "QueueWindows.h"
+#include "QueueData.h"
+#include "QueueDefs.h"
 using namespace Gdiplus;
-
-// main structure with plugin information, version, name...
-typedef struct {
-	int version;             // version of the plugin structure
-	const char* description; // name/title of the plugin 
-	int(*init)();            // function which will be executed on init event
-	void(*config)();         // function which will be executed on config event
-	void(*quit)();           // function which will be executed on quit event
-	HWND hwndParent;         // hwnd of the Winamp client main window (stored by Winamp when dll is loaded)
-	HINSTANCE hDllInstance;  // hinstance of this plugin DLL. (stored by Winamp when dll is loaded) 
-} winampGeneralPurposePlugin;
 
 int init(void);
 void config(void);
@@ -24,12 +16,6 @@ void quit(void);
 HINSTANCE g_hInstance = NULL;
 // Handle to the Winamp window.
 HWND g_hWinampWindow = NULL;
-
-// Plugin version (don't touch this!)
-#define GPPHDR_VER 0x10
-
-// Plugin title
-#define PLUGIN_NAME "Karaoke Singers Queue Display Plugin"
 
 // Original WndProc that we have to swap back in at the end of proceedings.
 WNDPROC g_pOriginalWndProc;
@@ -58,6 +44,7 @@ int init() {
 	g_hWinampWindow = plugin.hwndParent;
 	g_pOriginalWndProc = (WNDPROC)::SetWindowLong(plugin.hwndParent, GWL_WNDPROC, (LONG)SingersQueueWndProc);
 
+	CreateGraphics();
 	CreateWindows();
 
 	return 0;
@@ -71,4 +58,8 @@ void quit() {
 
 	::GdiplusShutdown(g_gdiPlusToken);
 	::SetWindowLong(plugin.hwndParent, GWL_WNDPROC, (LONG)g_pOriginalWndProc);
+
+	DestroyWindows();
+	DestroyGraphics();
+	ClearSingers();
 }
