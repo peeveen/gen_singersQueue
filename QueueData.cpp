@@ -8,6 +8,12 @@
 Singer** g_ppSingers=NULL;
 int g_nSingers = 0;
 
+HANDLE g_hFileScannerThread=NULL;
+HANDLE g_hStopFileScannerEvent = NULL;
+
+const WCHAR* g_pszSingersFilename = L"C:\\Users\\steve\\Documents\\Rainmeter\\Skins\\KaraokeManager\\KaraokeManager.singers.txt";
+FILETIME g_lastModifiedTime = { 0,0 };
+
 void ClearSingers() {
 	for (int f = 0; f < g_nSingers; ++f)
 		free(g_ppSingers[f]);
@@ -53,7 +59,7 @@ void AddSinger(const WCHAR* pszName, bool songs) {
 void ReadList() {
 	ClearSingers();
 	FILE* pFile = NULL;
-	errno_t error = _wfopen_s(&pFile, L"C:\\Users\\steve\\Documents\\Rainmeter\\Skins\\KaraokeManager\\KaraokeManager.singers.txt", L"rt");
+	errno_t error = _wfopen_s(&pFile, g_pszSingersFilename, L"rt");
 	if (pFile && !error) {
 		WCHAR szBuffer[256];
 		while (fgetws(szBuffer, 256, pFile)) {
@@ -62,5 +68,34 @@ void ReadList() {
 		}
 		fclose(pFile);
 	}
-	DrawList();
+}
+
+DWORD WINAPI ScanFile(LPVOID pParams) {
+	while (::WaitForSingleObject(g_hStopFileScannerEvent, 1000)==WAIT_TIMEOUT) {
+		HANDLE hFile=::CreateFile(g_pszSingersFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+		if (hFile != INVALID_HANDLE_VALUE) {
+			FILETIME lastModified;
+			if (::GetFileTime(hFile, NULL, NULL, &lastModified)) {
+				if ((g_lastModifiedTime.dwHighDateTime < lastModified.dwHighDateTime) || ((g_lastModifiedTime.dwHighDateTime == lastModified.dwHighDateTime) && (g_lastModifiedTime.dwLowDateTime < lastModified.dwLowDateTime))) {
+					ReadList();
+					DrawList(true);
+				}
+				g_lastModifiedTime = lastModified;
+			}
+			::CloseHandle(hFile);
+		}
+	}
+	return 0;
+}
+
+void StartFileScanner() {
+	g_hStopFileScannerEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	g_hFileScannerThread = ::CreateThread(NULL, 0, ScanFile, NULL, 0, NULL);
+}
+
+void StopFileScanner() {
+	::SetEvent(g_hStopFileScannerEvent);
+	::WaitForSingleObject(g_hFileScannerThread, INFINITE);
+	::CloseHandle(g_hStopFileScannerEvent);
+	ClearSingers();
 }

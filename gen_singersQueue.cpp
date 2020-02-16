@@ -46,6 +46,8 @@ int init() {
 
 	CreateGraphics();
 	CreateWindows();
+	RecreateDisplay();
+	StartFileScanner();
 
 	return 0;
 }
@@ -59,7 +61,7 @@ void quit() {
 	::GdiplusShutdown(g_gdiPlusToken);
 	::SetWindowLong(plugin.hwndParent, GWL_WNDPROC, (LONG)g_pOriginalWndProc);
 
+	StopFileScanner();
 	DestroyWindows();
 	DestroyGraphics();
-	ClearSingers();
 }

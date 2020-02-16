@@ -2,8 +2,8 @@
 #include "pch.h"
 #include "QueueDefs.h"
 
-void ClearSingers();
-void ReadList();
+void StartFileScanner();
+void StopFileScanner();
 
 extern Singer** g_ppSingers;
 extern int g_nSingers;

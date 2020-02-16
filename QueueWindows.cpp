@@ -36,6 +36,7 @@ LRESULT CALLBACK QueueWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_CLOSE:
 		return 1;
 	case WM_SIZE: {
+		ResetHeaderPosition();
 		RecreateDisplay();
 		break;
 	}
@@ -93,8 +94,6 @@ void UnregisterWindowClasses() {
 bool CreateWindows() {
 	if (RegisterQueueWindowClass() &&
 		CreateQueueWindow()) {
-		ReadList();
-		RecreateDisplay();
 		return true;
 	}
 	return false;

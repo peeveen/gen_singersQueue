@@ -4,6 +4,7 @@
 void CreateGraphics();
 void DestroyGraphics();
 void RecreateDisplay();
-void DrawList();
+void DrawList(bool updateWindow);
+void ResetHeaderPosition();
 
 extern HDC g_hQueueDC;
