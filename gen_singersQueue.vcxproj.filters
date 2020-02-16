@@ -36,6 +36,9 @@
     <ClInclude Include="QueueData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="QueuePrefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -53,6 +56,9 @@
     <ClCompile Include="QueueGraphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QueuePrefs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="gen_singersQueue.rc">
@@ -67,6 +73,9 @@
   <ItemGroup>
     <None Include="QueueDefs.h">
       <Filter>Header Files</Filter>
+    </None>
+    <None Include="gen_singersQueue.ini">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 #include <gdiplusenums.h>
 #include "QueueWindows.h"
 #include "QueueData.h"
+#include "QueuePrefs.h"
 using namespace Gdiplus;
 
 #define HEADER_MARGIN (10)
@@ -28,9 +29,6 @@ typedef struct TextMetrics {
 	int fontSize;
 	RectF bounds;
 } TextMetrics;
-
-const WCHAR* g_pszFontName = L"Segoe UI";
-int g_nDefaultFontSize = 24;
 
 SIZE GetWindowSize() {
 	RECT windowRect;
@@ -90,7 +88,7 @@ void DrawHeader(bool updateWindow) {
 }
 
 TextMetrics GetTextMetrics(Graphics *pG,int allowedWidth,const WCHAR* pszText,INT style) {
-	FontFamily fontFamily(g_pszFontName);
+	FontFamily fontFamily(g_szFont);
 	PointF p = { 0,40 };
 	RectF r(0, 0, 0, 0);
 	RectF bounds;
@@ -117,7 +115,7 @@ void DrawList(bool updateWindow) {
 	FillRoundRectangle(&g, &listBrush, windowRect, 8);
 
 	TextMetrics genericMoreMetrics = GetTextMetrics(&g, s.cx, L"+ MORE", FontStyleBoldItalic);
-	FontFamily fontFamily(g_pszFontName);
+	FontFamily fontFamily(g_szFont);
 
 	PointF p = { 0,40 };
 	for (int f = 0; f < g_nSingers; ++f) {

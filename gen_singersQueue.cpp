@@ -4,6 +4,7 @@
 #include <gdiplus.h>
 #include "QueueGraphics.h"
 #include "QueueWindows.h"
+#include "QueuePrefs.h"
 #include "QueueData.h"
 #include "QueueDefs.h"
 using namespace Gdiplus;
@@ -44,6 +45,7 @@ int init() {
 	g_hWinampWindow = plugin.hwndParent;
 	g_pOriginalWndProc = (WNDPROC)::SetWindowLong(plugin.hwndParent, GWL_WNDPROC, (LONG)SingersQueueWndProc);
 
+	ReadPrefs();
 	CreateGraphics();
 	CreateWindows();
 	RecreateDisplay();
