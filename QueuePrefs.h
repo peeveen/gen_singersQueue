@@ -3,6 +3,7 @@
 
 bool ReadPrefs();
 
+extern WCHAR g_szINIPath[];
 extern WCHAR g_szSingersFilePath[];
 extern WCHAR g_szFont[];
 extern int g_nDefaultFontSize;

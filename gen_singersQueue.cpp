@@ -1,6 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 #include <objidl.h>
+#include <shellapi.h>
 #include <gdiplus.h>
 #include "QueueGraphics.h"
 #include "QueueWindows.h"
@@ -55,6 +56,7 @@ int init() {
 }
 
 void config() {
+	::ShellExecute(g_hWinampWindow, L"edit", g_szINIPath, NULL, NULL, SW_SHOWDEFAULT);
 }
 
 void quit() {
