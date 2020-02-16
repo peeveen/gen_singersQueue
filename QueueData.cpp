@@ -23,12 +23,6 @@ void ClearSingers() {
 }
 
 void AddSinger(const WCHAR* pszName, bool songs) {
-	RECT windowRect;
-	::GetWindowRect(g_hQueueWindow, &windowRect);
-	int width = windowRect.right - windowRect.left;
-
-	Graphics g(g_hQueueDC);
-	FontFamily fontFamily(L"Segoe UI");
 	++g_nSingers;
 	Singer** ppSingers = (Singer**)malloc(sizeof(Singer*) * g_nSingers);
 	if (ppSingers) {
@@ -42,16 +36,6 @@ void AddSinger(const WCHAR* pszName, bool songs) {
 			if (pSinger->szName[nLen - 1] == '\n')
 				pSinger->szName[nLen - 1] = '\0';
 			pSinger->bSongs = songs;
-			RectF r(0, 0, 0, 0);
-			RectF textBounds;
-			float fontSize = 24;
-			do {
-				Font font(&fontFamily, (REAL)fontSize, FontStyleBold, UnitPixel);
-				g.MeasureString(pSinger->szName, -1, &font, r, &textBounds);
-				pSinger->stringSize = { textBounds.Width,textBounds.Height };
-				pSinger->fontSize = fontSize;
-				--fontSize;
-			} while (pSinger->stringSize.Width > width);
 		}
 	}
 }

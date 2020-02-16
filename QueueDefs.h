@@ -24,6 +24,4 @@ typedef struct {
 typedef struct Singer {
 	WCHAR szName[256];
 	bool bSongs;
-	SizeF stringSize;
-	float fontSize;
 } Singer;
