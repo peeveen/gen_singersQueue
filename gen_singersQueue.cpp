@@ -47,8 +47,8 @@ int init() {
 	g_pOriginalWndProc = (WNDPROC)::SetWindowLong(plugin.hwndParent, GWL_WNDPROC, (LONG)SingersQueueWndProc);
 
 	ReadPrefs();
-	CreateGraphics();
 	CreateWindows();
+	CreateGraphics();
 	RecreateDisplay();
 	StartFileScanner();
 

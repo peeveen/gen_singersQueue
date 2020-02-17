@@ -8,7 +8,8 @@
 #include "QueuePrefs.h"
 using namespace Gdiplus;
 
-#define HEADER_MARGIN (10)
+#define HEADER_HMARGIN (10)
+#define HEADER_VMARGIN (4)
 
 // The DC of the screen.
 HDC g_hScreenDC = NULL;
@@ -22,7 +23,7 @@ const WCHAR* g_pszHeaderText = L"SINGERS";
 HANDLE g_hHeaderMovementThread = NULL;
 HANDLE g_hStopHeaderMovementEvent = NULL;
 int g_nHeaderXOffset = 0;
-float g_nHeaderWidth = 0.0f;
+SIZE g_headerSize = { 0,0 };
 bool g_bHeaderMovingRight = true;
 
 typedef struct TextMetrics {
@@ -67,20 +68,15 @@ void DrawHeader(bool updateWindow) {
 	SIZE s = GetWindowSize();
 
 	Rect windowRect2(0, 0, s.cx, s.cy - 2);
-	Rect headerRect(0, 0, s.cx, 40);
+	Rect headerRect(0, 0, s.cx, g_headerSize.cy + (HEADER_VMARGIN * 2));
 	g.SetClip(headerRect);
 	g.Clear(Color::MakeARGB(0, 0, 0, 0));
 	SolidBrush headerBrush(Color::MakeARGB(192, 0, 0, 0));
 	FillRoundRectangle(&g, &headerBrush, windowRect2, 4);
 
-	FontFamily fontFamily(L"Segoe UI");
-	Font font(&fontFamily, 24, FontStyleBold, UnitPixel);
-	PointF p = { (REAL)HEADER_MARGIN+g_nHeaderXOffset,4 };
-	RectF headerTextRect;
-	if (g_nHeaderWidth == 0) {
-		g.MeasureString(g_pszHeaderText, -1, &font, p, &headerTextRect);
-		g_nHeaderWidth = headerTextRect.Width;
-	}
+	FontFamily fontFamily(g_szFont);
+	Font font(&fontFamily, (REAL)g_nDefaultFontSize, FontStyleBold, UnitPixel);
+	PointF p = { (REAL)HEADER_HMARGIN + g_nHeaderXOffset,HEADER_VMARGIN };
 	SolidBrush textBrush(Color::MakeARGB(254, 255, 255, 255));
 	g.DrawString(g_pszHeaderText, -1, &font, p, &textBrush);
 	if(updateWindow)
@@ -89,7 +85,6 @@ void DrawHeader(bool updateWindow) {
 
 TextMetrics GetTextMetrics(Graphics *pG,int allowedWidth,const WCHAR* pszText,INT style) {
 	FontFamily fontFamily(g_szFont);
-	PointF p = { 0,40 };
 	RectF r(0, 0, 0, 0);
 	RectF bounds;
 	int fontSize = g_nDefaultFontSize+1;
@@ -108,7 +103,7 @@ void DrawList(bool updateWindow) {
 	g.SetSmoothingMode(SmoothingModeAntiAlias8x4);
 
 	Rect windowRect(0, 0, s.cx, s.cy- 2);
-	Rect listRect(0, 40, s.cx, s.cy-2);
+	Rect listRect(0, g_headerSize.cy + (HEADER_VMARGIN * 2), s.cx, s.cy-2);
 	g.SetClip(listRect);
 	g.Clear(Color::MakeARGB(0, 0, 0, 0));
 	SolidBrush listBrush(Color::MakeARGB(192, 24, 24, 24));
@@ -117,7 +112,7 @@ void DrawList(bool updateWindow) {
 	TextMetrics genericMoreMetrics = GetTextMetrics(&g, s.cx, L"+ MORE", FontStyleBoldItalic);
 	FontFamily fontFamily(g_szFont);
 
-	PointF p = { 0,40 };
+	PointF p = { 0,(REAL)g_headerSize.cy };
 	for (int f = 0; f < g_nSingers; ++f) {
 		int remainingSpace = (int)((s.cy-2) - p.Y);
 		int brighten = g_ppSingers[f]->bSongs ? 160 : 0;
@@ -170,7 +165,7 @@ bool CreateQueueDC() {
 
 void ResetHeaderPosition() {
 	SIZE s = GetWindowSize();
-	g_nHeaderXOffset = (int)((s.cx - g_nHeaderWidth) / 2);
+	g_nHeaderXOffset = (int)(((s.cx-HEADER_HMARGIN*2) - g_headerSize.cx) / 2);
 }
 
 void MoveHeader() {
@@ -179,7 +174,7 @@ void MoveHeader() {
 		++g_nHeaderXOffset;
 	else
 		--g_nHeaderXOffset;
-	g_bHeaderMovingRight = !g_nHeaderXOffset || (g_bHeaderMovingRight && (s.cx - (g_nHeaderWidth + g_nHeaderXOffset) > HEADER_MARGIN*2));
+	g_bHeaderMovingRight = (g_nHeaderXOffset<=0) || (g_bHeaderMovingRight && (s.cx - (g_headerSize.cx + g_nHeaderXOffset) > HEADER_HMARGIN*2));
 	DrawHeader(true);
 }
 
@@ -189,9 +184,21 @@ DWORD WINAPI MoveHeaderThread(LPVOID pParams) {
 	return 0;
 }
 
+void MeasureHeader() {
+	FontFamily fontFamily(g_szFont);
+	Font font(&fontFamily, (REAL)g_nDefaultFontSize, FontStyleBold, UnitPixel);
+	PointF p = { 0,0 };
+	RectF headerTextRect;
+	Graphics g(g_hQueueDC);
+	g.MeasureString(g_pszHeaderText, -1, &font, p, &headerTextRect);
+	g_headerSize = { (LONG)headerTextRect.Width,(LONG)headerTextRect.Height };
+}
+
 void CreateGraphics() {
 	g_hScreenDC = ::GetDC(NULL);
 	CreateQueueDC();
+	MeasureHeader();
+	ResetHeaderPosition();
 	g_hStopHeaderMovementEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 	g_hHeaderMovementThread = ::CreateThread(NULL, 0, MoveHeaderThread, NULL, 0, NULL);
 }
