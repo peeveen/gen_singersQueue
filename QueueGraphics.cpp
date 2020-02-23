@@ -112,7 +112,7 @@ void DrawList(bool updateWindow) {
 	TextMetrics genericMoreMetrics = GetTextMetrics(&g, s.cx, L"+ MORE", FontStyleBoldItalic);
 	FontFamily fontFamily(g_szFont);
 
-	PointF p = { 0,(REAL)g_headerSize.cy };
+	PointF p = { 0,(REAL)g_headerSize.cy+HEADER_VMARGIN };
 	for (int f = 0; f < g_nSingers; ++f) {
 		int remainingSpace = (int)((s.cy-2) - p.Y);
 		int brighten = g_ppSingers[f]->bSongs ? 160 : 0;
