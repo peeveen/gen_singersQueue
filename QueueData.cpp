@@ -43,7 +43,7 @@ void AddSinger(const WCHAR* pszName, bool songs) {
 void ReadList() {
 	ClearSingers();
 	FILE* pFile = NULL;
-	errno_t error = _wfopen_s(&pFile, g_szSingersFilePath, L"rt");
+	errno_t error = _wfopen_s(&pFile, g_szSingersFilePath, L"rt, ccs=UTF-8");
 	if (pFile && !error) {
 		WCHAR szBuffer[256];
 		while (fgetws(szBuffer, 256, pFile)) {
