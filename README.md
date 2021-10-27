@@ -1,5 +1,5 @@
 # gen_singersQueue
-Winamp plugin to display queue of karaoke singers.
+Winamp plugin to display queue of karaoke singers. Never be asked "Am I up next?" ever again!
 * Reads list of singers from KaraokeManager
 * Singers with no cued songs display in darker colour
 * Resizable window
